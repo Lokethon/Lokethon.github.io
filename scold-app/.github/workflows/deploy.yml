@@ -1,0 +1,55 @@
+name: Deploy Scold App to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'scold-app/package-lock.json'
+
+      - name: 📦 Install Dependencies
+        working-directory: scold-app
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: 🚀 Export Expo Web Production Build
+        working-directory: scold-app
+        env:
+          EXPO_PUBLIC_GEMINI_API_KEY: ${{ secrets.EXPO_PUBLIC_GEMINI_API_KEY }}
+        run: npx expo export -p web
+
+      - name: 🔧 Fix GitHub Pages Routing (_expo Jekyll bypass & 404 fallback)
+        working-directory: scold-app/dist
+        run: |
+          touch .nojekyll
+          cp index.html 404.html
+
+      - name: 📤 Deploy to GitHub Pages Branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./scold-app/dist
+          keep_files: false
+          force_orphan: true
