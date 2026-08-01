@@ -33,14 +33,11 @@ export const useAuthStore = create<AuthState>((set) => {
     error: null,
 
     initialize: async () => {
-      set({ isLoading: true });
       try {
         const user = await authService.getCurrentUser();
-        set({ user, isAuthenticated: !!user });
+        set({ user, isAuthenticated: !!user, isLoading: false });
       } catch (error: any) {
-        set({ error: error.message });
-      } finally {
-        set({ isLoading: false });
+        set({ error: error.message, isLoading: false });
       }
     },
 

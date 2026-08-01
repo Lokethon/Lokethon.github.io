@@ -12,9 +12,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  if (isAuthenticated) {
-    return <Redirect href="/(app)" />;
-  }
+
 
   const handleLogin = async () => {
     if (!email || !password) return;
