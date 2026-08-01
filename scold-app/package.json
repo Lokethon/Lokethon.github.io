@@ -1,7 +1,7 @@
 {
   "name": "scold-app",
   "version": "1.0.0",
-  "main": "./src/app/_layout.tsx",
+  "main": "index.ts",
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "@react-native-async-storage/async-storage": "^2.1.2",
